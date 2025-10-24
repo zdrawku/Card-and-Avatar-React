@@ -1,31 +1,37 @@
-# Card and Avatar (React)
+# CardAndAvatarReact
 
-This project was generated with [App Builder Code Gen](https://www.appbuilder.dev/platform).
+This project was generated with [App Builder Code Gen](https://www.infragistics.com/products/appbuilder).
 
-## Development server
 
-Run `npm start` to build the application, start a web server and open the application in the default browser. The application will open in `http://localhost:3003/` by default.
+## Run in Visual Studio 2022
 
-## Build
+- open the project in **Visual Studio 2022**
 
-Run `npm run build` to build the application into an output directory.
+- press **Start** (**F5**)
 
-## Running unit tests
 
-Run `npm test` to execute the unit tests via [Vitest](https://vitest.dev/). Runs all `.test.tsx` files under `./src` folder.
+## Run in VS Code
 
-## Running code style checks
+NOTE: Running the app requires [.NET 9.0](https://dotnet.microsoft.com/en-us/download) to be installed.
 
-Run `npm run lint` to execute the code styling rules for the project.
+- open this folder in **VS Code**
 
-## Licensing
+- open a terminal window
 
-See the [License FAQ and Installation documentation](https://www.infragistics.com/products/ignite-ui-react/react/components/general-licensing) for information on how to upgrade to the full licensed package, if the project is using a Trial version of Ignite UI for React, and how to setup your environment and CI to use our licensed npm feed.
+- use this command to run:
+```dotnet run```
 
-If you're downloading the project as a .zip file, you still need to follow the steps in the License FAQ to configure access to the licensed feed before installing dependencies.
+- wait for message:
+**Now listening on: https://localhost:7228 and http://localhost:5072**
 
-Alternatively run `npm run infragistics-login` for a guided login to our licensed feed.
+- open **https://localhost:7228 OR http://localhost:5072** in your browser
 
-## Additional resources
+  _Ports are configured by "applicationUrl" specified in launch.Settings.json file and could be subject to change._
 
-- [Ignite UI for React](https://www.infragistics.com/products/ignite-ui-react) - to learn more about the product or to dive into component specifics and showcases.
+
+## Resources
+
+- [Documentation and Samples](https://www.infragistics.com/products/ignite-ui-blazor/blazor/components/general-getting-started-blazor-client)
+- [Infragistics NuGet Feed](https://www.infragistics.com/products/ignite-ui-blazor/blazor/components/general-nuget-feed)
+If you're downloading the project as a .zip file, you need to configure the required credentials and token to access the licensed NuGet feed before restoring dependencies.
+- [Razor Syntax](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/?view=aspnetcore-9.0#razor-syntax)
