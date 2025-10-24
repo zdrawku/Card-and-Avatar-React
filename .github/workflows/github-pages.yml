@@ -2,7 +2,7 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   workflow_dispatch: {}
 
 jobs:
@@ -19,35 +19,29 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    strategy:
-      matrix:
-        node-version: [22.x]
-
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
       with:
-        node-version: ${{ matrix.node-version }}
-        # cache: 'npm' # enable after committing lock file from first install
-    - run: echo "@infragistics:registry=https://packages.infragistics.com/npm/js-licensed/" >> ~/.npmrc
-    - run: echo "//packages.infragistics.com/npm/js-licensed/:_auth=${{ secrets.NPM_AUTH_TOKEN }}" >> ~/.npmrc
-    - run: echo "//packages.infragistics.com/npm/js-licensed/:always-auth=true" >> ~/.npmrc
-    - run: npm i # replace with 'npm ci' after committing lock file from first install
-    - name: Set environment variable for basename
-      run: echo "VITE_BASENAME=/${{ github.event.repository.name }}" >> $GITHUB_ENV
-    - run: npm run build -- --base=/${{ github.event.repository.name }}/
-    - name: Update Resource Paths
-      run: |
-        find ./dist/assets -type f -name "*.js" -exec sed -i 's|src/assets|${{ github.event.repository.name }}/assets|g' {} +;
-        find ./dist/assets -type f -name "*.js" -exec sed -i 's|/static-data/|/${{ github.event.repository.name }}/static-data/|g' {} +
-    - name: Copy Resources to dist
-      run: mkdir -p ./dist/assets && cp -R ./src/assets/* ./dist/assets/
-    - name: SPA routing handling
-      run: cp ./dist/index.html ./dist/404.html
-    - name: Upload build artifact to GitHub Pages
+        dotnet-version: 9.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Set project name
+      run: echo "PROJECT_NAME=$(basename *.sin .sin)" >> $GITHUB_ENV
+    - name: Update NavigationManager in Razor files
+      run: find ${{ env.PROJECT_NAME }} -type f -name "*.razor" -exec sed -i "s|NavigationManager.NavigateTo(path);|NavigationManager.NavigateTo(path.TrimStart('/'));|" {} \;
+    - name: Update static-data paths in Services folder
+      run: find ${{ env.PROJECT_NAME }}/Services -type f -exec sed -i "s|/static-data/|/${{ github.event.repository.name }}/static-data/|g" {} \;
+    - name: Publish Blazor WebAssembly
+      run: dotnet publish -c Release -o ./publish
+    - name: Update Base Href in index.html
+      run: sed -i 's|<base href="/"|<base href="/${{ github.event.repository.name }}/"|' publish/wwwroot/index.html
+    - name: SPA Routing Handling
+      run: cp publish/wwwroot/index.html publish/wwwroot/404.html
+    - name: Upload Build Artifact to GitHub Pages
       uses: actions/upload-pages-artifact@v3
       with:
-        path: ./dist
+        path: publish/wwwroot
     - name: Deploy to GitHub Pages
       uses: actions/deploy-pages@v4
